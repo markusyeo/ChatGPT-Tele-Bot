@@ -1,0 +1,22 @@
+[30;1m2023-01-22 18:01:49[0m [31mERROR   [0m [35m__main__[0m -> pyTelegramBotAPI version 4.9.0 is installed but does not match the requirements
+[30;1m2023-01-22 18:12:18[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 18:13:21[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 18:15:05[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 18:19:01[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:26:18[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:26:42[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:27:53[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:27:54[0m [31mERROR   [0m [35msrc.bot[0m -> Error while sending message: 'User' object has no attribute 'name'
+[31mTraceback (most recent call last):
+  File "/Users/markus/Downloads/ChatGPT-Tele/src/bot.py", line 20, in send_message
+    str(message.from_user.name) + '>\n\n'
+AttributeError: 'User' object has no attribute 'name'[0m
+[30;1m2023-01-22 19:28:01[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:28:01[0m [31mERROR   [0m [35msrc.bot[0m -> Error while sending message: 'User' object has no attribute 'name'
+[31mTraceback (most recent call last):
+  File "/Users/markus/Downloads/ChatGPT-Tele/src/bot.py", line 20, in send_message
+    str(message.from_user.name) + '>\n\n'
+AttributeError: 'User' object has no attribute 'name'[0m
+[30;1m2023-01-22 19:29:45[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:33:17[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
+[30;1m2023-01-22 19:40:03[0m [34;1mINFO    [0m [35msrc.bot[0m -> [31mMarkyYeo[0m : '273374275' (None)
