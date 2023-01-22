@@ -24,7 +24,7 @@ async def split_message(text, chat_id, client, code_block = False):
 async def send_message(message, client):
     chat_id = message.chat.id
     try:
-        response = f'<{str(message.from_user.username)}>\n'
+        response = f'{str(message.from_user.username)}:\t{message.text.split("/chat ")[1]}'
         question = message.text.split("/chat ")[1]
         response = f"{response}{await responses.handle_response(question)}"
         if "```" in response:

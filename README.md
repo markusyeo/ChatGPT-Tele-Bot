@@ -39,7 +39,7 @@ docker build -t gpt-tele-bot .
 2. Finally run a Docker container using the built image.
 
 ```
-docker run --name <container_name> -d runebot
+docker run --name <container_name> -d gpt-tele-bot
 ```
 
 You may rename `<container_name>` as you wish.
