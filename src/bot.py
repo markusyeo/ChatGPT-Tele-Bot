@@ -1,17 +1,23 @@
 import telebot
 from telebot.async_telebot import AsyncTeleBot
+from telebot.asyncio_handler_backends import State, StatesGroup
+from telebot.asyncio_storage import StateMemoryStorage
+from telebot import asyncio_filters
 import asyncio
 from telebot import util
 from src import responses
 from env import TOKEN
 import logging
+import emoji
 
-class aclient(AsyncTeleBot):
+class aclient(AsyncTeleBot, StatesGroup):
+    getChatReply = State()
+
     def __init__(self, TOKEN) -> None:
-        super().__init__(TOKEN)
+        super().__init__(TOKEN, state_storage=StateMemoryStorage())
         self.logger = telebot.logger
         telebot.logger.setLevel(logging.DEBUG)
-
+        
 async def split_message(text, chat_id, client, code_block = False):
     splitted_text = util.smart_split(text, chars_per_string=3000)
     if code_block:
@@ -21,12 +27,16 @@ async def split_message(text, chat_id, client, code_block = False):
         for msg in splitted_text:
             await client.send_message(chat_id, msg)
 
-async def send_message(message, client):
-    chat_id = message.chat.id
+async def send_message(message, client, followup = False):
+    chat_id = message.chat.id        
     try:
-        response = f'{str(message.from_user.username)}:\t{message.text.split("/chat ")[1]}'
-        question = message.text.split("/chat ")[1]
-        response = f"{response}{await responses.handle_response(question)}"
+        if followup:
+            question = message.text
+        else:
+            question = message.text.split("/chat ", 1)[1]
+        print("i am working")
+        response = emoji.emojize(f'{str(message.from_user.username)}:\t:outbox_tray:{question}') + "\n"
+        response += "\n".join(emoji.emojize(f"\n:inbox_tray:{await responses.handle_response(question)}").split("\n\n"))
         if "```" in response:
             # Split the response if the code block exists
             parts = response.split("```")
@@ -49,17 +59,37 @@ def run_tele_bot():
     client = aclient(BOT_TOKEN)
 
     @client.message_handler(commands=['chat'])
-    async def chat(message: str):
+    async def chat(message: str, bypass = False):
+        if message.text.split("/chat")[1] in ['', ' ']:
+            await client.set_state(message.from_user.id, aclient.getChatReply, message.chat.id)
+            await client.send_message(message.chat.id, 'Please enter a message to ask GPT:')
+        else:
+            username = str(message.from_user.username)
+            channel = str(message.sender_chat)
+            client.logger.info(
+                f"\x1b[31m{username}\x1b[0m : ({channel})")
+            await send_message(message, client)
+
+    @client.message_handler(state=aclient.getChatReply)
+    async def chat_followup(message):
         username = str(message.from_user.username)
         channel = str(message.sender_chat)
         client.logger.info(
             f"\x1b[31m{username}\x1b[0m : ({channel})")
-        await send_message(message, client)
+        await send_message(message, client, followup=True)
+        await client.delete_state(message.from_user.id, message.chat.id)
 
     @client.message_handler(commands=['help'])
     async def help(message):
-        await client.reply_to(message, ":star:**BASIC COMMANDS** \n  `/chat [message]` Chat with ChatGPT!\n  For complete documentation, please visit https://github.com/markusyeo/chatGPT-Tele", parse_mode = "markdown")
+        await client.reply_to(message, emoji.emojize(":star:**BASIC COMMANDS** \n  `/chat [message]` Chat with ChatGPT!\n  For complete documentation, please visit https://github.com/markusyeo/chatGPT-Tele-Bot"), parse_mode = "markdown")
         client.logger.info(
             "\x1b[31mSomeone need help!\x1b[0m")
 
-    asyncio.run(client.polling())
+    @client.message_handler(commands=['start'])
+    async def start_message(message: str):
+        start_msg = emoji.emojize(f':robot: Welcome to ChatGPT-Tele! \n To begin chatting, type `/chat [message]` \n For more information, type `/help`')
+        await client.reply_to(message, start_msg, parse_mode = "markdown")
+
+    client.add_custom_filter(asyncio_filters.StateFilter(client))
+    asyncio.run(client.infinity_polling())
+
