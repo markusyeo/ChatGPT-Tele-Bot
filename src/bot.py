@@ -86,12 +86,12 @@ def run_tele_bot():
             "\x1b[31mSomeone need help!\x1b[0m")
 
     @client.message_handler(commands=['start'])
-    async def start_message(message: str):
+    async def start_message(message):
         start_msg = emoji.emojize(f':robot: Welcome to ChatGPT-Tele! \n To begin chatting, type `/chat [message]` \n For more information, type `/help`')
         await client.reply_to(message, start_msg, parse_mode = "markdown")
 
-    @client.message_handler(commmands=["reset"])
-    async def reset(message: str):
+    @client.message_handler(commmands=['reset'])
+    async def reset(message):
         await responses.chatbot.reset()
         await client.reply_to(message, emoji.emojize(":robot:**Info: I have forgotten everything.**", parse_mode = "markdown"))
 
