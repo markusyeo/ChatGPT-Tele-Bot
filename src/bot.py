@@ -21,16 +21,21 @@ class aclient(AsyncTeleBot, StatesGroup):
         self.logger = telebot.logger
         telebot.logger.setLevel(logging.DEBUG)
         
-async def split_message(text, chat_id, client, code_block = False):
-    splitted_text = util.smart_split(text, chars_per_string=3000)
+async def split_message(text, chat_id, client, msg_id = None, code_block = False, is_start = -1):
+    splitted_text = util.smart_split(text, chars_per_string=3000)        
     if code_block:
         for msg in splitted_text:
             print(msg)
             await client.send_message(chat_id, "```" + msg + "```", parse_mode = "markdown")
     else: 
-        for msg in splitted_text:
-            print(msg)
-            await client.send_message(chat_id, msg)
+        if is_start == 0:
+            await client.edit_message_text(chat_id=chat_id, text=splitted_text[0], message_id=msg_id)
+            if len(splitted_text) > 1:
+                for msg in splitted_text[1:]:
+                    await client.send_message(chat_id, msg)
+        else:
+            for msg in splitted_text:
+                await client.send_message(chat_id, msg)
 
 async def send_message(message, client, followup = False):
     chat_id = message.chat.id
@@ -42,20 +47,21 @@ async def send_message(message, client, followup = False):
             question = message.text
         else:
             question = message.text.split("/chat ", 1)[1]
-        response = emoji.emojize(f'{str(message.from_user.username)}:\t:outbox_tray:{question}') + "\n"
-        response += "\n".join(emoji.emojize(f"\n:inbox_tray:{await responses.handle_response(question)}").split("\n\n"))
+        response = emoji.emojize(f'{str(message.from_user.username)}:\t:outbox_tray:{question}\n\n:inbox_tray:')
+        msg = await client.send_message(chat_id, response + "ChatGPT is thinking...", parse_mode = "markdown")
+        response += "\n".join(f"{await responses.handle_response(question)}".split("\n\n"))
         if "```" in response:
             # Split the response if the code block exists
             parts = response.split("```")
             code_flag = 0
             for part in parts:
                 if not(code_flag % 2):
-                    await split_message(part, chat_id, client)
+                    await split_message(part, chat_id, client, msg.message_id, is_start = code_flag)
                 else:
-                    await split_message(part, chat_id, client, True)
+                    await split_message(part, chat_id, client, code_block = True)
                 code_flag += 1
         else:
-            await split_message(response, chat_id, client)
+            await split_message(response, chat_id, client, msg.message_id, is_start = 0)
     except Exception as e:
         await client.send_message(message.chat.id, emoji.emojize(":red_exclamation_mark:**Error: Something went wrong, please try again!:red_exclamation_mark:**"), parse_mode = "markdown")
         client.logger.exception(f"Error while sending message: {e}")
