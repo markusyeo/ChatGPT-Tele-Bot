@@ -9,10 +9,13 @@ from src import responses
 from env import TOKEN
 import logging
 import emoji
+from revChatGPT.Official import Prompt
+
+chatbot = responses.chatbot
 
 class aclient(AsyncTeleBot, StatesGroup):
     getChatReply = State()
-
+    
     def __init__(self, TOKEN) -> None:
         super().__init__(TOKEN, state_storage=StateMemoryStorage())
         self.logger = telebot.logger
@@ -22,19 +25,23 @@ async def split_message(text, chat_id, client, code_block = False):
     splitted_text = util.smart_split(text, chars_per_string=3000)
     if code_block:
         for msg in splitted_text:
+            print(msg)
             await client.send_message(chat_id, "```" + msg + "```", parse_mode = "markdown")
     else: 
         for msg in splitted_text:
+            print(msg)
             await client.send_message(chat_id, msg)
 
 async def send_message(message, client, followup = False):
-    chat_id = message.chat.id        
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    if user_id in chatbot.get_conversations():
+        chatbot.load_conversation(user_id)
     try:
         if followup:
             question = message.text
         else:
             question = message.text.split("/chat ", 1)[1]
-        print("i am working")
         response = emoji.emojize(f'{str(message.from_user.username)}:\t:outbox_tray:{question}') + "\n"
         response += "\n".join(emoji.emojize(f"\n:inbox_tray:{await responses.handle_response(question)}").split("\n\n"))
         if "```" in response:
@@ -50,8 +57,13 @@ async def send_message(message, client, followup = False):
         else:
             await split_message(response, chat_id, client)
     except Exception as e:
-        await client.send_message(message.chat.id, "> **Error: Something went wrong, please try again later!**")
+        await client.send_message(message.chat.id, emoji.emojize(":red_exclamation_mark:**Error: Something went wrong, please try again!:red_exclamation_mark:**"), parse_mode = "markdown")
         client.logger.exception(f"Error while sending message: {e}")
+    try:
+        chatbot.save_conversation(user_id)
+    except:
+        await client.send_message(message.chat.id, emoji.emojize(":red_exclamation_mark:**Sorry I failed to save your conversation, please try again!:red_exclamation_mark:**"), parse_mode = "markdown")
+    chatbot.prompt = Prompt(enc=chatbot.enc)
 
 def run_tele_bot():
     
@@ -62,7 +74,7 @@ def run_tele_bot():
     async def chat(message: str, bypass = False):
         if message.text.split("/chat")[1] in ['', ' ']:
             await client.set_state(message.from_user.id, aclient.getChatReply, message.chat.id)
-            await client.send_message(message.chat.id, 'Please enter a message to ask GPT:')
+            await client.send_message(message.chat.id, emoji.emojize(':keyboard:Please enter a message to ask ChatGPT:'))
         else:
             username = str(message.from_user.username)
             channel = str(message.sender_chat)
@@ -87,8 +99,12 @@ def run_tele_bot():
     
     @client.message_handler(commands=['reset'])
     async def reset(message):
-        responses.chatbot.reset()
-        await client.reply_to(message, emoji.emojize(":robot:**Info: I have forgotten everything.**"), parse_mode = "markdown")
+        try:
+            chatbot.delete_conversation(message.from_user.id)
+            await client.reply_to(message, emoji.emojize(f":robot:**Info: I have forgotten everything from you {message.from_user.username}.**"), parse_mode = "markdown")
+        except:
+            await client.reply_to(message, emoji.emojize(f":red_exclamation_mark::robot:**Sorry I might not have correctly deleted your message history {message.from_user.username}.:red_exclamation_mark:**"), parse_mode = "markdown")
+        
 
     @client.message_handler(commands=['start'])
     async def start_message(message):
