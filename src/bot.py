@@ -85,10 +85,10 @@ def run_tele_bot():
         client.logger.info(
             "\x1b[31mSomeone need help!\x1b[0m")
     
-    @client.message_handler(commmands=['reset'])
+    @client.message_handler(commands=['reset'])
     async def reset(message):
         responses.chatbot.reset()
-        await client.reply_to(message, emoji.emojize(":robot:**Info: I have forgotten everything.**", parse_mode = "markdown"))
+        await client.reply_to(message, emoji.emojize(":robot:**Info: I have forgotten everything.**"), parse_mode = "markdown")
 
     @client.message_handler(commands=['start'])
     async def start_message(message):
