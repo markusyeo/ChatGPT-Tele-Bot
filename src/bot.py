@@ -90,7 +90,7 @@ def run_tele_bot():
         start_msg = emoji.emojize(f':robot: Welcome to ChatGPT-Tele! \n To begin chatting, type `/chat [message]` \n For more information, type `/help`')
         await client.reply_to(message, start_msg, parse_mode = "markdown")
 
-    @client.tree.command(name="reset")
+    @client.message_handler(commmands=["reset"])
     async def reset(message: str):
         await responses.chatbot.reset()
         await client.reply_to(message, emoji.emojize(":robot:**Info: I have forgotten everything.**", parse_mode = "markdown"))
