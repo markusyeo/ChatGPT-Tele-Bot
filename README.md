@@ -1,12 +1,11 @@
 # chatGPT-Tele-Bot
 
 > ### This is a project that provides you to build your own Telegram bot using ChatGPT
-An up to date Telegram Bot that generates replies using GPT-3. **Take note that this does not use ChatGPT at the moment so it does not have content retention.
-> ### Update 02 Feb 2023: The bot now makes use of revChatGPT which uses the official chatgpt api and we now have content keeping.
+An up to date Telegram Bot that generates replies using ~~GPT-3~~ ChatGPT!. 
+> ### Update 02 Feb 2023: The bot now makes use of revChatGPT which uses the official chatgpt api and we now have content keeping. Conversations are also unique to the user sending the message
 
 ---
-> ### Thank you for Zero's [chatGPT-discord-bot](https://github.com/Zero6992/chatGPT-discord-bot) efforts in maintaining the discord bot. I want to give credit to Zero whose code I based this Telegram bot off on and influencing this readme. I'll be keeping this up to date as openai releases the new API and updating the features of the bot when there's an update.
-
+> ### Thank you for Zero's [chatGPT-discord-bot](https://github.com/Zero6992/chatGPT-discord-bot) efforts in maintaining the discord bot and acheong08's [revChatGPT](https://github.com/acheong08/ChatGPT) efforts for creating an api to link to ChatGPT api.
 
 ## Features
 

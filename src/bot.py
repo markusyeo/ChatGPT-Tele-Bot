@@ -108,7 +108,7 @@ def run_tele_bot():
 
     @client.message_handler(commands=['start'])
     async def start_message(message):
-        start_msg = emoji.emojize(f':robot: Welcome to ChatGPT-Tele! \n To begin chatting, type `/chat [message]` \n For more information, type `/help`')
+        start_msg = emoji.emojize(f':robot: Welcome to ChatGPT-Tele! \n To begin chatting, type `/chat [message]` \n For more information, type `/help` \n To reset your conversation history, type `/reset` \n For complete documentation, please visit https://github.com/markusyeo/chatGPT-Tele-Bot')
         await client.reply_to(message, start_msg, parse_mode = "markdown")
 
 
