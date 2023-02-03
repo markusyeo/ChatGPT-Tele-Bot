@@ -106,7 +106,7 @@ def run_tele_bot():
     @client.message_handler(commands=['reset'])
     async def reset(message):
         try:
-            chatbot.remove_conversation(message.from_user.id)
+            chatbot.conversations.remove_conversation(message.from_user.id)
             await client.reply_to(message, emoji.emojize(f":robot:**Info: I have forgotten everything from you {message.from_user.username}.**"), parse_mode = "markdown")
         except:
             await client.reply_to(message, emoji.emojize(f":red_exclamation_mark::robot:**Sorry I might not have correctly deleted your message history {message.from_user.username}.:red_exclamation_mark:**"), parse_mode = "markdown")
