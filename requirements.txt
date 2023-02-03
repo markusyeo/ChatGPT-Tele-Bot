@@ -1,4 +1,4 @@
 pyTelegramBotAPI==4.9.0
 asgiref==3.6.0
 emoji==2.2.0
-revChatGPT==1.0.11
+revChatGPT==1.1.1

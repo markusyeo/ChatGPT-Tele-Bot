@@ -40,7 +40,7 @@ async def split_message(text, chat_id, client, msg_id = None, code_block = False
 async def send_message(message, client, followup = False):
     chat_id = message.chat.id
     user_id = message.from_user.id
-    if user_id in chatbot.get_conversations():
+    if user_id in chatbot.conversations.conversations:
         chatbot.load_conversation(user_id)
     try:
         if followup:
@@ -69,7 +69,7 @@ async def send_message(message, client, followup = False):
         chatbot.save_conversation(user_id)
     except:
         await client.send_message(message.chat.id, emoji.emojize(":red_exclamation_mark:**Sorry I failed to save your conversation, please try again!:red_exclamation_mark:**"), parse_mode = "markdown")
-    chatbot.prompt = Prompt(enc=chatbot.enc)
+    chatbot.prompt = Prompt()
 
 def run_tele_bot():
     
@@ -106,7 +106,7 @@ def run_tele_bot():
     @client.message_handler(commands=['reset'])
     async def reset(message):
         try:
-            chatbot.delete_conversation(message.from_user.id)
+            chatbot.remove_conversation(message.from_user.id)
             await client.reply_to(message, emoji.emojize(f":robot:**Info: I have forgotten everything from you {message.from_user.username}.**"), parse_mode = "markdown")
         except:
             await client.reply_to(message, emoji.emojize(f":red_exclamation_mark::robot:**Sorry I might not have correctly deleted your message history {message.from_user.username}.:red_exclamation_mark:**"), parse_mode = "markdown")
